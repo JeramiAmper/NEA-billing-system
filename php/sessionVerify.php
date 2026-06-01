@@ -1,5 +1,5 @@
 <?php
-include('../functions.php');
+include_once('../functions.php');
 
 if (!isAdmin()) {
     $_SESSION['msg'] = "You must log in first";

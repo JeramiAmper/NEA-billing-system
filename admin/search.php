@@ -1,6 +1,5 @@
 <?php
 include '../php/sessionVerify.php';
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,6 +113,14 @@ include '../php/sessionVerify.php';
                         $querybill = "SELECT BID, BDate, BYear, BMonth, Current_Reading, Prev_Reading, Bamount, payment_status FROM bill WHERE CUSID='$cusid' ORDER BY BYear DESC, FIELD(BMonth, 'Baisakh', 'Jestha', 'Aasadh', 'Shrawan', 'Bhadra', 'Asoj', 'Kartik', 'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra') DESC";
                         $billResult = mysqli_query($conn, $querybill);
 
+                        $unpaidCountResult = mysqli_query($conn, "SELECT COUNT(*) AS unpaid_count FROM bill WHERE CUSID='$cusid' AND payment_status = 0");
+                        $unpaidCount = 0;
+                        if ($unpaidCountResult) {
+                            $countRow = mysqli_fetch_assoc($unpaidCountResult);
+                            $unpaidCount = intval($countRow['unpaid_count']);
+                        }
+                        $paymentReminderNotice = getBillCountNotice($unpaidCount);
+
                         if (mysqli_num_rows($billResult) > 0) {
                             $myarray = array();
                             echo '<div class="results-section">';
@@ -121,6 +128,9 @@ include '../php/sessionVerify.php';
                             echo '<div class="section-icon">📄</div>';
                             echo '<h2>Bill Details</h2>';
                             echo '</div>';
+                            if ($paymentReminderNotice) {
+                                echo '<div style="margin-bottom:1rem;">' . $paymentReminderNotice . '</div>';
+                            }
                             echo '<div class="table-wrapper">';
                             echo '<table class="data-table">';
                             echo '<thead>';
@@ -146,6 +156,7 @@ include '../php/sessionVerify.php';
                                 $PReading = $row['Prev_Reading'];
                                 $paymentStatus = $row['payment_status'];
                                 $statusBadge = $paymentStatus ? '<span class="badge paid">✓ Paid</span>' : '<span class="badge unpaid">⏳ Unpaid</span>';
+                                $overdueNotice = getBillDueNotice($row['BDate'], $paymentStatus);
 
                                 echo "<tr>
                                         <td>{$BID}</td>
@@ -154,7 +165,13 @@ include '../php/sessionVerify.php';
                                         <td>{$Bmonth}</td>
                                         <td>{$CReading}</td>
                                         <td>{$PReading}</td>
-                                        <td>{$statusBadge}</td>
+                                        <td>{$statusBadge}";
+
+                                if ($overdueNotice) {
+                                    echo "<div class=\"overdue-notice\">{$overdueNotice}</div>";
+                                }
+
+                                echo "</td>
                                       </tr>";
                             }
                             echo '</tbody>';

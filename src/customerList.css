@@ -127,12 +127,19 @@ body {
     color: var(--muted);
 }
 
-@media (max-width: 900px) {
-    .report-card {
-        padding: 1.5rem;
-    }
+.overdue-notice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(254, 226, 226, 0.95);
+    color: #991b1b;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
 
-    .data-table {
         min-width: 720px;
     }
 }

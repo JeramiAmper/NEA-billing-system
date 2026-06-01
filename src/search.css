@@ -585,3 +585,17 @@ footer {
         opacity: 1;
     }
 }
+.overdue-notice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(254, 226, 226, 0.95);
+    color: #991b1b;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-top: 0.4rem;
+}
+

@@ -1,5 +1,5 @@
 <?php
-include('functions.php');
+include_once('functions.php');
 
 if (isset($_GET['billid'])) {
     $bill_id = $_GET['billid'];

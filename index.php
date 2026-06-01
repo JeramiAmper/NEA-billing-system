@@ -1,5 +1,5 @@
 <?php
-include('functions.php');
+include_once('functions.php');
 
 if (!isLoggedIn()) {
   $_SESSION['msg'] = "You must log in first";
@@ -51,6 +51,22 @@ include './php/dbconnect.php';
       font-size: 0.82rem;
       font-weight: 600;
     }
+  </style>
+</head>
+
+<body>
+
+  <?php
+  $currentPage = basename($_SERVER['PHP_SELF']);
+  include './components/navbar.php';
+  ?>
+
+  <div class="content">
+
+    <!-- SUCCESS MESSAGE -->
+    <?php if (isset($_SESSION['success'])): ?>
+      <div class="error success">
+        <h3>
           <?php
           echo $_SESSION['success'];
           unset($_SESSION['success']);
@@ -185,6 +201,13 @@ include './php/dbconnect.php';
             ";
 
             $billResult = mysqli_query($conn, $querybill);
+            $unpaidCountResult = mysqli_query($conn, "SELECT COUNT(*) AS unpaid_count FROM bill WHERE CUSID='$userId' AND payment_status = 0");
+            $unpaidCount = 0;
+            if ($unpaidCountResult) {
+                $countRow = mysqli_fetch_assoc($unpaidCountResult);
+                $unpaidCount = intval($countRow['unpaid_count']);
+            }
+            $paymentReminderNotice = getBillCountNotice($unpaidCount);
 
             // =========================
             // BILL FOUND
@@ -193,6 +216,9 @@ include './php/dbconnect.php';
             if (mysqli_num_rows($billResult) > 0) {
 
               echo "<h2 style='margin:1rem 0;'>Bill Details</h2>";
+              if ($paymentReminderNotice) {
+                  echo "<div class='overdue-notice' style='margin-bottom:1rem;'>$paymentReminderNotice</div>";
+              }
 
               echo "
               <table class='center'>

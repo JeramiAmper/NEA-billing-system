@@ -1,5 +1,6 @@
 <?php
 include '../php/sessionVerify.php';
+include_once '../functions.php';
 include '../php/dbconnect.php';
 
 $query = "SELECT c.CUSID, c.SCND, c.Fullname, b.branch_name, d.descrip AS demand_type, GROUP_CONCAT(bi.BID ORDER BY bi.BYear DESC, bi.BMonth DESC SEPARATOR ', ') AS bills"
@@ -58,24 +59,52 @@ $result = $conn->query($query);
                                 <th>Full Name</th>
                                 <th>Branch</th>
                                 <th>Demand Type</th>
-                                <th>Bill IDs</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                        <th>Bill IDs</th>
+                        <th>Notice</th>
+                    </tr>
+                </thead>
+                <tbody>
                             <?php if ($result && $result->num_rows > 0): ?>
                                 <?php while ($row = $result->fetch_assoc()): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($row['CUSID']); ?></td>
                                         <td><?php echo htmlspecialchars($row['SCND']); ?></td>
                                         <td><?php echo htmlspecialchars($row['Fullname']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['branch_name'] ?: '—'); ?></td>
+                                                <td><?php echo htmlspecialchars($row['branch_name'] ?: '—'); ?></td>
                                         <td><?php echo htmlspecialchars($row['demand_type'] ?: '—'); ?></td>
                                         <td><?php echo htmlspecialchars($row['bills'] ?: 'No bills'); ?></td>
+                                        <td>
+                                            <?php
+                                            $unpaidCountQuery = "SELECT COUNT(*) AS unpaid_count FROM bill WHERE CUSID = '" . intval($row['CUSID']) . "' AND payment_status = 0";
+                                            $unpaidCountResult = $conn->query($unpaidCountQuery);
+                                            $unpaidCount = 0;
+                                            if ($unpaidCountResult) {
+                                                $countRow = $unpaidCountResult->fetch_assoc();
+                                                $unpaidCount = intval($countRow['unpaid_count']);
+                                            }
+
+                                            $notice = getBillCountNotice($unpaidCount);
+                                            if (!$notice && $unpaidCount > 0) {
+                                                $overdueQuery = "SELECT BDate FROM bill WHERE CUSID = '" . intval($row['CUSID']) . "' AND payment_status = 0";
+                                                $overdueResult = $conn->query($overdueQuery);
+                                                if ($overdueResult && $overdueResult->num_rows > 0) {
+                                                    while ($billRow = $overdueResult->fetch_assoc()) {
+                                                        if (isBillOverdue($billRow['BDate'], 0)) {
+                                                            $notice = getBillDueNotice($billRow['BDate'], 0);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            echo $notice ? $notice : '—';
+                                            ?>
+                                        </td>
                                     </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6" class="no-data">No customers found.</td>
+                                    <td colspan="7" class="no-data">No customers found.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>

@@ -242,4 +242,13 @@ function getBillDueNotice($billDate, $paymentStatus)
     return '<span class="overdue-notice">⚠️ Overdue 2+ months — disconnection notice</span>';
 }
 
+function getBillCountNotice($unpaidCount, $threshold = 3)
+{
+    if ($unpaidCount <= $threshold) {
+        return '';
+    }
+
+    return '<span class="overdue-notice">⚠️ ' . intval($unpaidCount) . ' unpaid bills — please pay now</span>';
+}
+
 ?>

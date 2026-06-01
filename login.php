@@ -1,5 +1,5 @@
 <?php
-include('functions.php');
+include_once('functions.php');
 if (!apiIsOnline()) {
     renderApiOfflinePage('System Offline', 'The API server is not running. Login is disabled until the API is available.');
 }
