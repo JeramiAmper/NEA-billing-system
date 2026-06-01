@@ -215,4 +215,31 @@ function display_error()
     }
 }
 
+function isBillOverdue($billDate, $paymentStatus, $months = 2)
+{
+    if ($paymentStatus) {
+        return false;
+    }
+
+    $billDateObj = DateTime::createFromFormat('Y-m-d', $billDate);
+    if (!$billDateObj) {
+        return false;
+    }
+
+    $dueDate = clone $billDateObj;
+    $dueDate->modify("+{$months} months");
+    $today = new DateTime('today');
+
+    return $today > $dueDate;
+}
+
+function getBillDueNotice($billDate, $paymentStatus)
+{
+    if (!isBillOverdue($billDate, $paymentStatus)) {
+        return '';
+    }
+
+    return '<span class="overdue-notice">⚠️ Overdue 2+ months — disconnection notice</span>';
+}
+
 ?>

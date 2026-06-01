@@ -97,6 +97,14 @@ include '../php/sessionVerify.php';
                 <a href="paymentOption.php" class="card-link">Access →</a>
             </div>
 
+            <!-- Customer List -->
+            <div class="dashboard-card">
+                <div class="card-icon">📋</div>
+                <h3>Customer List</h3>
+                <p>View all customers with branch, demand type, and bill IDs</p>
+                <a href="customerList.php" class="card-link">View All →</a>
+            </div>
+
             <!-- Search -->
             <div class="dashboard-card">
                 <div class="card-icon">🔍</div>

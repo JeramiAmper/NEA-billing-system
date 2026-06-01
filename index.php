@@ -40,24 +40,17 @@ include './php/dbconnect.php';
       padding: 0.5rem;
       text-align: center;
     }
-  </style>
 
-  <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
-</head>
-
-<body>
-
-  <?php
-  $currentPage = basename($_SERVER['PHP_SELF']);
-  include './components/navbar.php';
-  ?>
-
-  <div class="content">
-
-    <!-- SUCCESS MESSAGE -->
-    <?php if (isset($_SESSION['success'])): ?>
-      <div class="error success">
-        <h3>
+    .overdue-notice {
+      display: inline-block;
+      margin-top: 0.35rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      background: #fee2e2;
+      color: #b91c1c;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
           <?php
           echo $_SESSION['success'];
           unset($_SESSION['success']);
@@ -222,6 +215,7 @@ include './php/dbconnect.php';
                 $CReading = $bill['Current_Reading'];
                 $PReading = $bill['Prev_Reading'];
                 $status = $bill['payment_status'];
+                $overdueNotice = getBillDueNotice($BDate, $status);
 
                 echo "
                 <tr>
@@ -247,6 +241,10 @@ include './php/dbconnect.php';
 
                   echo '<a href="./payment.php?billid=' . urlencode($BID) . '&amount=' . urlencode($Bamount) . '">Pay</a>';
 
+                }
+
+                if ($overdueNotice) {
+                    echo '<div class="overdue-notice">' . $overdueNotice . '</div>';
                 }
 
                 echo "
