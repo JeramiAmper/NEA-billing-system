@@ -75,16 +75,16 @@ $result = $conn->query($query);
                                         <td><?php echo htmlspecialchars($row['bills'] ?: 'No bills'); ?></td>
                                         <td>
                                             <?php
-                                            $unpaidCountQuery = "SELECT COUNT(*) AS unpaid_count FROM bill WHERE CUSID = '" . intval($row['CUSID']) . "' AND payment_status = 0";
-                                            $unpaidCountResult = $conn->query($unpaidCountQuery);
-                                            $unpaidCount = 0;
-                                            if ($unpaidCountResult) {
-                                                $countRow = $unpaidCountResult->fetch_assoc();
-                                                $unpaidCount = intval($countRow['unpaid_count']);
+                                            $billCountQuery = "SELECT COUNT(*) AS bill_count FROM bill WHERE CUSID = '" . intval($row['CUSID']) . "'";
+                                            $billCountResult = $conn->query($billCountQuery);
+                                            $billCount = 0;
+                                            if ($billCountResult) {
+                                                $countRow = $billCountResult->fetch_assoc();
+                                                $billCount = intval($countRow['bill_count']);
                                             }
 
-                                            $notice = getBillCountNotice($unpaidCount);
-                                            if (!$notice && $unpaidCount > 0) {
+                                            $notice = getBillCountNotice($billCount);
+                                            if (!$notice) {
                                                 $overdueQuery = "SELECT BDate FROM bill WHERE CUSID = '" . intval($row['CUSID']) . "' AND payment_status = 0";
                                                 $overdueResult = $conn->query($overdueQuery);
                                                 if ($overdueResult && $overdueResult->num_rows > 0) {
